@@ -48,6 +48,29 @@
      <link rel="stylesheet" href="css/css/main.css">
     <!--endbuild-->
 
+    <style>
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        max-width: 800px;
+        margin: auto;
+      }
+  
+      .grid-item {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        border: 2px solid #e74c3c;
+      }
+  
+      .grid-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+
   
   </head>
   <body>
@@ -183,9 +206,6 @@
         </h1>
       </div>
 
-      <div>
-        <img  src="/images/services/bcl.jpg"/>
-      </div>
 
       <div>
 
@@ -201,11 +221,6 @@
               Pan African player in the field of Plant and Machinery Valuations among others 
               </li> 
           </ul>
-          <div style="display: flex; align-items: center;">
-            <img style=" width: 100px; height: auto; margin-right: 10px; " src="./images/Team Photos/paul_bcl.png" alt="Image" class="image">
-            <p class="text">Mr Paul Ramokgalo had the pleasure to lead a team of mining , chemical and risk engineers on this project</p>
-        </div>
-
         </div>
 
        
@@ -213,8 +228,14 @@
             
 
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin: 20px;" >
-              <img src="./images/services/bcl2.jpg" />
-              <img src="./images/services/bcl3.jpg" />
+
+              <div class="grid-container">
+                <div class="grid-item"><img src="./images/services/pnrb_shaft.png" /></div>
+                <div class="grid-item"><img src="./images/services/pnrb_front.png" /></div>
+                <div class="grid-item"><img src="./images/services/pnrb_machine.png" /></div>
+                <div class="grid-item"><img src="./images/services/pnrb_close.png" /></div>
+              </div>
+              
             </div>
 
       </div>
