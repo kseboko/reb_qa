@@ -49,26 +49,126 @@
     <!--endbuild-->
 
     <style>
-      .grid-container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        max-width: 800px;
-        margin: auto;
+
+      .body{
+        display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50vh;
+            margin: 0;
+            background: #fff;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
       }
-  
-      .grid-item {
-        width: 100%;
-        aspect-ratio: 1 / 1;
-        overflow: hidden;
-        border: 2px solid #e74c3c;
-      }
-  
-      .grid-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
+
+      .carousel-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease;
+            height: 200px;
+        }
+        
+        .carousel-slide {
+            min-width: 300px;
+            padding: 0 10px;
+            box-sizing: border-box;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .carousel-slide:hover {
+            transform: scale(1.05);
+        }
+        
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.7);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        #prevBtn {
+            left: 10px;
+        }
+        
+        #nextBtn {
+            right: 10px;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            max-width: 80%;
+            max-height: 80%;
+        }
+        
+        .modal-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+        
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+            cursor: pointer;
+        }
+        
+        .nav-dot.active {
+            background: #333;
+        }
     </style>
 
   
@@ -223,20 +323,46 @@
           </ul>
         </div>
 
-       
-           
-            
-
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin: 20px;" >
-
-              <div class="grid-container">
-                <div class="grid-item"><img src="./images/services/pnrb_shaft.png" /></div>
-                <div class="grid-item"><img src="./images/services/pnrb_front.png" /></div>
-                <div class="grid-item"><img src="./images/services/pnrb_machine.png" /></div>
-                <div class="grid-item"><img src="./images/services/pnrb_close.png" /></div>
-              </div>
-              
+        <div class="carousel-container">
+          <div class="carousel-track">
+            <div class="carousel-slide">
+                <img src="./images/services/pnrb_shaft.png" alt="Shaft View">
             </div>
+            <div class="carousel-slide">
+                <img src="./images/services/pnrb_front.png" alt="Front View">
+            </div>
+            <div class="carousel-slide">
+                <img src="./images/services/pnrb_machine.png" alt="Machine View">
+            </div>
+            <div class="carousel-slide">
+                <img src="./images/services/pnrb_close.png" alt="Close-up View">
+            </div>
+            <div class="carousel-slide">
+                <img src="./images/Team Photos/onsite.jpg" alt="Team Photo">
+            </div>
+        </div>
+          
+          <button class="carousel-btn" id="prevBtn">❮</button>
+          <button class="carousel-btn" id="nextBtn">❯</button>
+          
+          <div class="carousel-nav">
+              <div class="nav-dot active"></div>
+              <div class="nav-dot"></div>
+              <div class="nav-dot"></div>
+              <div class="nav-dot"></div>
+              <div class="nav-dot"></div>
+          </div>
+      </div>
+      
+      <!-- Modal -->
+      <div class="modal" id="imageModal">
+          <span class="close-modal">&times;</span>
+          <div class="modal-content">
+              <img id="modalImage" src="" alt="">
+          </div>
+      </div>
+        
+       
 
       </div>
 
@@ -372,7 +498,102 @@
     <script src="js/team/Chart.min.js"></script>
     <script src="js/team/custom-chart.js"></script>
     <script src="js/team/main.js"></script>
-   
-   
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+            const track = document.querySelector('.carousel-track');
+            const slides = document.querySelectorAll('.carousel-slide');
+            const dots = document.querySelectorAll('.nav-dot');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const closeModal = document.querySelector('.close-modal');
+            
+            const slideWidth = slides[0].getBoundingClientRect().width;
+            let currentIndex = 0;
+            
+            // Set initial position
+            updateCarousel();
+            
+            // Next/previous buttons
+            nextBtn.addEventListener('click', nextSlide);
+            prevBtn.addEventListener('click', prevSlide);
+            
+            // Dot navigation
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                });
+            });
+            
+            // Click on image to open modal
+            slides.forEach(slide => {
+                slide.addEventListener('click', function() {
+                    const imgSrc = this.querySelector('img').src;
+                    const imgAlt = this.querySelector('img').alt;
+                    modalImg.src = imgSrc;
+                    modalImg.alt = imgAlt;
+                    modal.style.display = 'flex';
+                });
+            });
+            
+            // Close modal
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            // Close when clicking outside image
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') nextSlide();
+                if (e.key === 'ArrowLeft') prevSlide();
+                if (e.key === 'Escape') modal.style.display = 'none';
+            });
+            
+            function nextSlide() {
+                currentIndex = (currentIndex + 1) % slides.length;
+                updateCarousel();
+            }
+            
+            function prevSlide() {
+                currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                updateCarousel();
+            }
+            
+            function goToSlide(index) {
+                currentIndex = index;
+                updateCarousel();
+            }
+            
+            function updateCarousel() {
+                const offset = -currentIndex * slideWidth;
+                track.style.transform = `translateX(${offset}px)`;
+                
+                // Update dots
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentIndex);
+                });
+            }
+            
+            // Auto-advance (optional)
+            let autoSlide = setInterval(nextSlide, 3000);
+            
+            // Pause on hover
+            const container = document.querySelector('.carousel-container');
+            container.addEventListener('mouseenter', () => {
+                clearInterval(autoSlide);
+            });
+            
+            container.addEventListener('mouseleave', () => {
+                autoSlide = setInterval(nextSlide, 3000);
+            });
+        });
+  </script>
 
 </body></html>
